@@ -23,8 +23,16 @@ void setup()
 
 void loop() 
 {
-    double A[8][8];      double x[8];      double E[3][3];      double U[3][3];      double S[3][3];      double V[3][3];   
-    double K[3][3] = {{1,0,0},{0,1,0},{0,0,1}};    
+    double A[8][8];      double x[8];      double E[3][3];      double U[3][3];      double S[3][3];      double V[3][3];  double aux1[3][3]; double aux2[3][3];
+    //The K matrix of the camera (Intrinsect parameters matrix)
+    double K[3][3] = {{699.478, 0, 642.268},{0, 699.478, 360.798},{0,0,1}}; double Kt[3][3];
+    for(int i=0;i<3; i++)
+    {
+    for(int j=0;j<3; j++)
+      {
+        Kt[i][j]=K[j][i];
+      }          
+    } 
     //First, we recibe from Serial the matching points.
     //If is the first time,  we save them in mp1.
     //If not, we save them in mp2 and copy mp2 to mp1.
@@ -71,8 +79,14 @@ void loop()
       ConstruyeA(nmp1,nmp2,A);
       //Solve for the Fundamental Matrix elements x.
       Resuelve(A,x);      
-      //We calculated the Essential Matrix E using the normalization matrix.
-      DesNormaliza(mp1,mp2,x,E);
+      //We calculated the Fundamental Matrix E using the normalization matrix and the Instrinsect Parameters
+      DesNormaliza(mp1,mp2,x,aux1);      
+      Mul(Kt,aux1,aux2);
+      Mul(aux2,K,E);
+
+      
+    
+
       //Display the Esential Matrix.
       //DespliegaMatriz(E);      
       //We find the USV Decomposition of the E Matrix.
